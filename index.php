@@ -7,7 +7,7 @@ require_once 'db_conn.php';
 // Check kung active ang session
 if (!isset($_SESSION['user_id'])) {
     // Wala pay session, padala sa login
-    header("Location: login.php");
+    header("Location: login_process.php");
     exit();
 } else {
     // Naay session, padala sa dashboard
