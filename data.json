@@ -1,0 +1,44 @@
+[
+  {
+    "name": "NBSC Clinic",
+    "desc": "Campus health clinic for students and staff.",
+    "type": "facility",
+    "lat": 8.359086,
+    "lng": 124.868224
+  },
+  {
+    "name": "Laboratory Building",
+    "desc": "Computer laboratories.",
+    "type": "facility",
+    "lat": 8.359558,
+    "lng": 124.869152
+  },
+  {
+    "name": "SWDC Building",
+    "desc": "Student Welfare & Development Center.",
+    "type": "facility",
+    "lat": 8.360307,
+    "lng": 124.867499
+  },
+  {
+    "name": "Under Construction Zone",
+    "desc": "This area is currently under construction. Students are advised to avoid.",
+    "type": "warning",
+    "lat": 8.360900,
+    "lng": 124.868600
+  },
+  {
+    "name": "Under Construction Zone 2",
+    "desc": "Construction in progress. Safety first!",
+    "type": "warning",
+    "lat": 8.361000,
+    "lng": 124.869000
+  },
+  {
+    "name": "Libary",
+    "desc": "Campus library for students and staff",
+    "type": "facility",
+    "lat": 8.359234,
+    "lng": 124.867805
+  }
+]
