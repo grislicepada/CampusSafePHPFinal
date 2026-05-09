@@ -5,15 +5,9 @@ function toggleMenu() {
     }
 }
 
-//Core App Functions (Retained)
-
-function showSection(id) {
-    document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-    document.getElementById(id)?.classList.remove("hidden");
-}
 function logout() {
-    localStorage.removeItem("activeUser");
-    window.location.href = "index.php";
+    // Redirect to PHP to properly destroy the session
+    window.location.href = "logout.php";
 }
 
 //Consolidated Event Listener 

@@ -18,7 +18,7 @@
     <button onclick="window.location.href='reports.php'">Reports</button>
     <button onclick="window.location.href='profile.php'">Profile</button>
     <button onclick="window.location.href='about.php'">About</button>
-    <button onclick="logout()">Logout</button>
+            <button onclick="window.location.href='logout.php'">Logout</button>
   </div>
 </header>
 
@@ -30,6 +30,6 @@
   </div>
 </main>
 
-<script src="map.js"></script>
+<script src="js/map.js"></script>
 </body>
 </html>

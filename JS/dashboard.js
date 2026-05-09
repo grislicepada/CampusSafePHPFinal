@@ -6,33 +6,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Main Dashboard Loading Function ---
 function loadDashboard() {
-    // CHANGED: Check the variable passed from PHP instead of LocalStorage
-    if (typeof currentUser === 'undefined' || !currentUser) {
-        alert("Please login first.");
-        window.location.href = "login.php";
-        return;
-    }
-
-    // CHANGED: Use the PHP-injected currentUser variable
-    const user = currentUser; 
-    const reports = JSON.parse(localStorage.getItem("reports_" + user) || "[]");
+    // CHANGED: Use the PHP-injected userReports from the database
+    const reports = userReports; 
 
     updateSafetyAlert('none', 'All systems normal.');
-
     fetchWeatherSnapshot();
 
-    // Recent Reports
+    // Recent Reports List
     const list = document.getElementById("recentReports");
-    list.innerHTML = reports.slice(-5).reverse()
-        .map(r => `<li>${r.type} – ${r.desc} (${r.date})</li>`).join("");
+    if (reports.length > 0) {
+        list.innerHTML = reports.slice(0, 5) // Get top 5 recent
+            .map(r => `<li><strong>${r.category}</strong> – ${r.description} (${new Date(r.date_reported).toLocaleDateString()})</li>`).join("");
+    } else {
+        list.innerHTML = "<li>No reports filed yet.</li>";
+    }
 
     // --- Charts ---
     const typeCount = {};
     const reportDates = {};
 
     reports.forEach(r => {
-        typeCount[r.type] = (typeCount[r.type] || 0) + 1;
-        reportDates[r.date] = (reportDates[r.date] || 0) + 1;
+        // Count by Category
+        typeCount[r.category] = (typeCount[r.category] || 0) + 1;
+        
+        // Group by Date
+        const dateStr = new Date(r.date_reported).toLocaleDateString();
+        reportDates[dateStr] = (reportDates[dateStr] || 0) + 1;
     });
 
     // Doughnut Chart
@@ -62,6 +61,7 @@ function loadDashboard() {
         options: { responsive: true, maintainAspectRatio: false }
     });
 
+    // Load Map
     setTimeout(loadDashboardMap, 100);
 }
 
@@ -77,54 +77,25 @@ function loadDashboardMap() {
     }).addTo(map);
 
     const markersLayer = L.layerGroup().addTo(map);
+    const reports = userReports; // Use database records
 
-    // CHANGED: Use the PHP-injected currentUser variable
-    const user = currentUser;
-    const reports = JSON.parse(localStorage.getItem("reports_" + user) || "[]");
-
-    function createMarker(spot) {
-        const popup = `
-            <div style="font-family: 'Segoe UI'; padding: 5px;">
-                <h4 style="margin:0; color:#00796B;">${spot.name}</h4>
-                <p>${spot.desc}</p>
-                <strong>Type: ${spot.type}</strong>
-            </div>
-        `;
-        L.marker([spot.lat, spot.lng]).addTo(markersLayer).bindPopup(popup);
-    }
-
-    // Load user reports
+    // Load user reports markers
     reports.forEach(r => {
-        if (r.lat && r.lng) {
-            createMarker({
-                name: r.type,
-                desc: r.desc,
-                type: `User Report (${r.date})`,
-                lat: r.lat,
-                lng: r.lng
-            });
+        // NOTE: Your tbl_reports doesn't have lat/lng columns yet. 
+        // If you add them later, change r.lat to r.latitude and r.lng to r.longitude
+        if (r.lat && r.lng) { 
+            const popup = `
+                <div style="font-family: 'Segoe UI'; padding: 5px;">
+                    <h4 style="margin:0; color:#00796B;">${r.category}</h4>
+                    <p>${r.description}</p>
+                    <strong>Status: ${r.status}</strong>
+                </div>
+            `;
+            L.marker([r.lat, r.lng]).addTo(markersLayer).bindPopup(popup);
         }
     });
 
-    // Add new report on click
-    map.on('click', function (e) {
-        const type = prompt("Enter report type:");
-        const desc = prompt("Enter report description:");
-        if (!type || !desc) return;
-
-        const newReport = {
-            type, desc,
-            date: new Date().toLocaleDateString(),
-            lat: e.latlng.lat,
-            lng: e.latlng.lng
-        };
-
-        reports.push(newReport);
-        localStorage.setItem("reports_" + user, JSON.stringify(reports));
-
-        createMarker(newReport);
-        loadDashboard();
-    });
+    // NOTE: Removed the map click-to-add-report because we need to use the form in reports.php to save to DB
 }
 
 // --- Safety Alert ---

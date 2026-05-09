@@ -1,16 +1,39 @@
 <?php
 session_start();
+require_once 'db_conn.php'; // Include PDO
 
-// Protect the dashboard: if no session, kick them out
+// Protect the dashboard
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
+
+// FETCH REPORTS FROM DATABASE USING A JOIN
+ $user_id = $_SESSION['user_id'];
+
+// We use LEFT JOIN to connect tbl_reports with tbl_users
+// This fetches the report details AND the name of the user who filed it
+ $sql = "SELECT 
+            r.report_id, 
+            r.location_id, 
+            r.category, 
+            r.description, 
+            r.status, 
+            r.date_reported,
+            u.name AS user_name,
+            u.email AS user_email
+        FROM tbl_reports r 
+        LEFT JOIN tbl_users u ON r.user_id = u.user_id 
+        WHERE r.user_id = :user_id 
+        ORDER BY r.date_reported DESC";
+
+ $stmt = $pdo->prepare($sql);
+ $stmt->execute(['user_id' => $user_id]);
+ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,11 +42,11 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
     <header id="topbar">
         <div class="brand">CampusSafe</div>
-        <div class="controls">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div class="controls" id="navControls">
             <button onclick="window.location.href='dashboard.php'">Dashboard</button>
             <button onclick="window.location.href='weather.php'">Weather</button>
             <button onclick="window.location.href='map.php'">Map</button>
@@ -33,6 +56,7 @@ if (!isset($_SESSION['user_id'])) {
             <button onclick="window.location.href='logout.php'">Logout</button>
         </div>
     </header>
+    
     <main class="container">
         <div class="card">
             <h2>Dashboard</h2>
@@ -61,16 +85,23 @@ if (!isset($_SESSION['user_id'])) {
                 <h4>Reports Map View</h4>
                 <div id="dashboardMap"></div> 
             </div> 
+            
             <div class="card small">
                 <h4>Recent Reports</h4>
                 <ul id="recentReports"></ul>
             </div>
         </div>
     </main> 
-   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- <script src="js/dashboard.js"></script> -->
-    <script src="main.js"></script>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- PASS DATABASE RECORDS TO JAVASCRIPT -->
+    <script>
+        const currentUser = "<?php echo $_SESSION['name']; ?>";
+        const userReports = <?php echo json_encode($reports); ?>;
+    </script>
 
-  
+    <script src="js/dashboard.js"></script>
+    <script src="js/main.js"></script>
 </body> 
 </html>
