@@ -15,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusSafe - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -30,7 +30,7 @@ if (!isset($_SESSION['user_id'])) {
             <button onclick="window.location.href='reports.php'">Reports</button>
             <button onclick="window.location.href='profile.php'">Profile</button>
             <button onclick="window.location.href='about.php'">About</button>
-            <button onclick="logout()">Logout</button>
+            <button onclick="window.location.href='logout.php'">Logout</button>
         </div>
     </header>
     <main class="container">

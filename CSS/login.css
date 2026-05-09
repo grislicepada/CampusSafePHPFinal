@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+:root {
+    --color-primary: #00796B;
+    --color-secondary: #004D40;
+    --color-background: #F4F7F9;
+    --color-card: #FFFFFF;
+    --color-text: #333333;
+    --color-subtext: #666666;
+    --color-border: #E0E0E0;
+    --color-warning: #FF9800;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+    /* Centers the login card vertically on the screen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Login Container */
+.login-container {
+    background-color: var(--color-card);
+    border-radius: 10px;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h2 {
+    color: var(--color-primary);
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+}
+
+/* Error Message */
+.error-message {
+    color: #F44336; /* Red color for errors */
+    background-color: #ffe6e6;
+    border-left: 4px solid #F44336;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95em;
+}
+
+/* Inputs */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 1.1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.2);
+    outline: none;
+}
+
+/* Login Button */
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background-color: var(--color-warning);
+    color: var(--color-card);
+    font-size: 1.1em;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn-login:hover {
+    background-color: #E68900;
+    transform: translateY(-1px);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* Error Message Fix (Remove inline styles from HTML) */
+.error-message {
+    color: #F44336; 
+    background-color: #ffe6e6;
+    border-left: 4px solid #F44336;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* Register Link */
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95em;
+    color: var(--color-subtext);
+}
+
+.register-link a {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 480px) {
+    .login-container {
+        margin: 20px;
+        padding: 25px;
+    }
+}

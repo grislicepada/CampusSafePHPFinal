@@ -9,7 +9,7 @@ require_once 'db_conn.php'; // Includes $pdo
 // Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    $email_input = $_POST['email'] ?? ''; // Save email to remember it in the form
+    $email_input = $_POST['email'] ?? ''; 
     $password = $_POST['password'] ?? '';
 
     if (empty($email_input) || empty($password)) {
@@ -23,11 +23,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $stmt->fetch();
 
         if ($row) {
-            // NOTE: If your passwords in the database are STILL PLAIN TEXT, 
-            // change: password_verify($password, $row['password'])
-            // to:     $password === $row['password']
+            $password_matches = false;
+
+            // 1. Check if it's a proper hashed password (Standard secure way)
             if (password_verify($password, $row['password'])) {
+                $password_matches = true;
+            } 
+            // 2. Fallback for old plain-text passwords (Temporary migration)
+            elseif ($password === $row['password']) {
+                $password_matches = true;
                 
+                // Upgrade the plain text password to a secure hash
+                $new_hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $update_sql = "UPDATE tbl_users SET password = :password WHERE user_id = :user_id";
+                $update_stmt = $pdo->prepare($update_sql);
+                $update_stmt->execute([
+                    'password' => $new_hashed_password,
+                    'user_id' => $row['user_id']
+                ]);
+            }
+
+            if ($password_matches) {
                 // Set session variables
                 $_SESSION['user_id'] = $row['user_id'];
                 $_SESSION['name'] = $row['name'];
@@ -36,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect to dashboard
                 header("Location: dashboard.php");
                 exit();
-
             } else {
                 $error_msg = "Incorrect password.";
             }
@@ -59,7 +74,7 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusSafe - Login</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 
@@ -68,7 +83,7 @@ if (isset($_SESSION['user_id'])) {
 
         <!-- Display Error Message if any -->
         <?php if (!empty($error_msg)): ?>
-            <div class="error-message" style="color: red; margin-bottom: 15px;">
+            <div class="error-message">
                 <?php echo htmlspecialchars($error_msg); ?>
             </div>
         <?php endif; ?>
@@ -87,6 +102,11 @@ if (isset($_SESSION['user_id'])) {
 
             <button type="submit" class="btn-login">Login</button>
         </form>
+
+        <!-- Register Link -->
+        <div class="register-link">
+            <p>Don't have an account? <a href="register.php">Register here</a></p>
+        </div>
     </div>
 
 </body>
