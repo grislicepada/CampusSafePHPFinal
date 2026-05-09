@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Protect the dashboard: if no session, kick them out
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,7 +68,7 @@
         </div>
     </main> 
    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="dashboard.js"></script>
+    <!-- <script src="js/dashboard.js"></script> -->
     <script src="main.js"></script>
 
   

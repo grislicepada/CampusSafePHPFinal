@@ -1,4 +1,3 @@
-
 let reportsChart, timelineChart;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,13 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Main Dashboard Loading Function ---
 function loadDashboard() {
-    const user = localStorage.getItem("activeUser");
-    if (!user) {
+    // CHANGED: Check the variable passed from PHP instead of LocalStorage
+    if (typeof currentUser === 'undefined' || !currentUser) {
         alert("Please login first.");
-        window.location.href = "index.php";
+        window.location.href = "login.php";
         return;
     }
 
+    // CHANGED: Use the PHP-injected currentUser variable
+    const user = currentUser; 
     const reports = JSON.parse(localStorage.getItem("reports_" + user) || "[]");
 
     updateSafetyAlert('none', 'All systems normal.');
@@ -77,7 +78,8 @@ function loadDashboardMap() {
 
     const markersLayer = L.layerGroup().addTo(map);
 
-    const user = localStorage.getItem("activeUser");
+    // CHANGED: Use the PHP-injected currentUser variable
+    const user = currentUser;
     const reports = JSON.parse(localStorage.getItem("reports_" + user) || "[]");
 
     function createMarker(spot) {

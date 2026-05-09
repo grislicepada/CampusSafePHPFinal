@@ -1,14 +1,22 @@
 <?php
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "campussafe";
+ $host = "localhost";
+ $user = "root";
+ $password = "";
+ $database = "campussafe";
 
-// Pag-create sa connection
-$conn = mysqli_connect($host, $user, $password, $database);
+try {
+    // PDO Connection String
+    $dsn = "mysql:host=$host;dbname=$database;charset=utf8mb4";
+    
+    // PDO Options: Error mode as Exception, Fetch as Associative Array
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ];
 
-// Imbis echo, check lang nato kung naay error
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    $pdo = new PDO($dsn, $user, $password, $options);
+
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 ?>
