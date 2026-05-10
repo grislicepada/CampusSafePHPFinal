@@ -1,17 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const activeUser = localStorage.getItem("activeUser");
-  
-
   const map = L.map("map").setView([8.360179, 124.868653], 15);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
 
   const markersLayer = L.layerGroup().addTo(map);
   let defaultData = [];
-  let userReports = JSON.parse(localStorage.getItem("reports_" + activeUser) || "[]");
 
   function renderMarkers() {
     markersLayer.clearLayers();
-    function createMarker(spot){
+
+    // 1. Render Default Campus Locations (from data.json)
+    defaultData.forEach(spot => {
       const popupContent = `
         <div style="text-align:center;">
           <img src="${spot.image||'images/default.jpg'}" style="width:100px; border-radius:6px; margin-bottom:5px;">
@@ -20,9 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><b>Category:</b> ${spot.type}</p>
         </div>`;
       L.marker([spot.lat, spot.lng]).addTo(markersLayer).bindPopup(popupContent);
+    });
+
+    // 2. Render User's DB Reports (from map.php)
+    if (typeof dbUserReports !== 'undefined') {
+      dbUserReports.forEach(r => {
+        const popupContent = `
+          <div style="text-align:center;">
+            <h3 style="color:#00796B; margin:0;">${r.category}</h3>
+            <p>${r.description}</p>
+          </div>`;
+        L.marker([r.latitude, r.longitude]).addTo(markersLayer).bindPopup(popupContent);
+      });
     }
-    defaultData.forEach(createMarker);
-    userReports.forEach(createMarker);
   }
 
   fetch("data.json").then(r=>r.json()).then(data=>{
@@ -30,19 +38,45 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMarkers();
   }).catch(()=>{ renderMarkers(); });
 
-  map.on("click", e => {
-    const type = prompt("Report Type (e.g., Fire, Flood, Theft):");
-    if(!type) return;
-    const desc = prompt("Description:");
-    if(!desc) return;
+  // 3. Handle Map Click -> Send to DATABASE!
+  map.on("click", async e => {
+    const category = prompt("Report Type (e.g., Fire, Flood, Theft):");
+    if(!category) return;
+    const description = prompt("Description:");
+    if(!description) return;
 
-    const newReport = {type, desc, date:new Date().toLocaleString(), lat:e.latlng.lat, lng:e.latlng.lng};
-    userReports.push(newReport);
-    localStorage.setItem("reports_" + activeUser, JSON.stringify(userReports));
-    renderMarkers();
-    alert("Report added successfully.");
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
 
-    try{ loadDashboard(); } catch(e){}
-    try{ loadReportsTable(); } catch(e){}
+    try {
+        // Send data to our new PHP file using Fetch API
+        const formData = new FormData();
+        formData.append('category', category);
+        formData.append('description', description);
+        formData.append('lat', lat);
+        formData.append('lng', lng);
+
+        const response = await fetch('api_add_report.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            // Add the new marker directly to the map so you see it instantly
+            const popupContent = `
+              <div style="text-align:center;">
+                <h3 style="color:#00796B; margin:0;">${category}</h3>
+                <p>${description}</p>
+              </div>`;
+            L.marker([lat, lng]).addTo(markersLayer).bindPopup(popupContent);
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        alert("An error occurred while saving the report.");
+        console.error(error);
+    }
   });
 });
