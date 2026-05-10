@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
         populateRecentReports(); 
     }
     
-    // Safety Alert Initialization (using 'none' as default for safety)
-    if (typeof updateSafetyAlert === 'function') {
-        updateSafetyAlert('none', 'All systems normal.'); 
-    }
+    // // Safety Alert Initialization (using 'none' as default for safety)
+    // if (typeof updateSafetyAlert === 'function') {
+    //     updateSafetyAlert('none', 'All systems normal.'); 
+    // }
     if (typeof fetchWeatherSnapshot === 'function') {
         fetchWeatherSnapshot(); 
     }
