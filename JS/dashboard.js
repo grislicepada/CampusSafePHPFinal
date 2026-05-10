@@ -9,6 +9,23 @@ function loadDashboard() {
     const reports = userReports; 
 
     // ==========================================
+    // DISPLAY RIGHT JOIN DATA: Location Safety Overview
+    // ==========================================
+    const locSafetyDiv = document.getElementById("locationSafetyList");
+    if (locSafetyDiv && typeof locationSafetyData !== 'undefined') {
+        locSafetyDiv.innerHTML = locationSafetyData.map(loc => {
+            const count = loc.total_pending || 0;
+            const color = count > 0 ? '#F44336' : '#4CAF50';
+            const icon = count > 0 ? '⚠️' : '✅';
+            return `<div style="background: white; padding: 10px 15px; border-radius: 8px; border-left: 4px solid ${color}; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <strong>${icon} ${loc.location_name}</strong><br>
+                        <small style="color:${color}; font-weight: 600;">${count} Pending Report(s)</small>
+                    </div>`;
+        }).join("");
+    }
+    // ==========================================
+
+    // ==========================================
     // UPGRADED: SMART SAFETY ALERT LOGIC
     // ==========================================
     const dangerousCategories = ['Fire', 'Flood', 'Earthquake', 'Typhoon'];
