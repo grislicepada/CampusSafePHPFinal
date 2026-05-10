@@ -16,6 +16,8 @@ if (!isset($_SESSION['user_id'])) {
  $sql = "SELECT 
             r.report_id, 
             r.location_id, 
+            r.latitude AS lat, 
+            r.longitude AS lng, 
             r.category, 
             r.description, 
             r.status, 
