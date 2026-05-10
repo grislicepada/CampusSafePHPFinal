@@ -81,21 +81,19 @@ function loadDashboardMap() {
 
     // Load user reports markers
     reports.forEach(r => {
-        // NOTE: Your tbl_reports doesn't have lat/lng columns yet. 
-        // If you add them later, change r.lat to r.latitude and r.lng to r.longitude
         if (r.lat && r.lng) { 
             const popup = `
                 <div style="font-family: 'Segoe UI'; padding: 5px;">
                     <h4 style="margin:0; color:#00796B;">${r.category}</h4>
                     <p>${r.description}</p>
+                    
+                    <small style="color:#666;">Date: ${new Date(r.date_reported).toLocaleDateString()}</small><br>
                     <strong>Status: ${r.status}</strong>
                 </div>
             `;
             L.marker([r.lat, r.lng]).addTo(markersLayer).bindPopup(popup);
         }
     });
-
-    // NOTE: Removed the map click-to-add-report because we need to use the form in reports.php to save to DB
 }
 
 // --- Safety Alert ---
