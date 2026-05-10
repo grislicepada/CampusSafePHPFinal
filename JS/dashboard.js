@@ -12,14 +12,23 @@ function loadDashboard() {
     updateSafetyAlert('none', 'All systems normal.');
     fetchWeatherSnapshot();
 
-    // Recent Reports List
+    // --- UPDATED RECENT REPORTS LIST ---
     const list = document.getElementById("recentReports");
     if (reports.length > 0) {
         list.innerHTML = reports.slice(0, 5) // Get top 5 recent
-            .map(r => `<li><strong>${r.category}</strong> – ${r.description} (${new Date(r.date_reported).toLocaleDateString()})</li>`).join("");
+            .map(r => {
+                // Check if the report is Completed or Pending
+                const textStyle = r.status === 'Completed' ? 'text-decoration: line-through; opacity: 0.6;' : '';
+                const statusBadge = r.status === 'Completed' 
+                    ? '<span style="color:#4CAF50; font-size:0.85em;">✔ Completed</span>' 
+                    : '<span style="color:#FF9800; font-size:0.85em;">⏳ Pending</span>';
+                
+                return `<li style="${textStyle}"><strong>${r.category}</strong> – ${r.description} ${statusBadge} (${new Date(r.date_reported).toLocaleDateString()})</li>`;
+            }).join("");
     } else {
         list.innerHTML = "<li>No reports filed yet.</li>";
     }
+    // --- END OF UPDATED SECTION ---
 
     // --- Charts ---
     const typeCount = {};
@@ -82,13 +91,14 @@ function loadDashboardMap() {
     // Load user reports markers
     reports.forEach(r => {
         if (r.lat && r.lng) { 
+            // Added color coding for the map popup status as well!
+            const statusColor = r.status === 'Completed' ? '#4CAF50' : '#FF9800';
             const popup = `
                 <div style="font-family: 'Segoe UI'; padding: 5px;">
                     <h4 style="margin:0; color:#00796B;">${r.category}</h4>
                     <p>${r.description}</p>
-                    
                     <small style="color:#666;">Date: ${new Date(r.date_reported).toLocaleDateString()}</small><br>
-                    <strong>Status: ${r.status}</strong>
+                    <strong style="color:${statusColor};">Status: ${r.status}</strong>
                 </div>
             `;
             L.marker([r.lat, r.lng]).addTo(markersLayer).bindPopup(popup);
